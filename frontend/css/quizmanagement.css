@@ -1,0 +1,304 @@
+:root {
+    --neon-yellow: #fcff4b;
+    --neon-blue: #00fff5;
+    --neon-pink: #ff00ff;
+    --dark-bg: #0a0a0f;
+    --card-bg: #1a1a24;
+}
+
+/* Main Layout */
+.quiz-management-container {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    margin-top: 60px;
+    min-height: calc(100vh - 60px);
+}
+
+/* Left Panel (25%) */
+.left-container {
+    width: 25%;
+    background: var(--card-bg);
+    border: 1px solid var(--neon-blue);
+    border-radius: 8px;
+    padding: 1.5rem;
+    height: calc(100vh - 120px); /* Fixed height */
+    overflow-y: auto; /* Scrollable content */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+.left-container::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+
+/* Right Panel (70%) */
+.right-container {
+    width: 70%;
+    background: var(--card-bg);
+    border: 1px solid var(--neon-blue);
+    border-radius: 8px;
+    padding: 1.5rem;
+    height: calc(100vh - 120px); /* Fixed height */
+    overflow-y: auto; /* Scrollable content */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+.right-container::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+
+/* Header Styling */
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--neon-pink);
+}
+
+.panel-header h2 {
+    color: var(--neon-blue);
+    margin: 0;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Quiz List */
+.quizzes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.quiz-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(10,10,15,0.8);
+    border: 1px solid var(--neon-blue);
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quiz-item:hover {
+    background: rgba(0,255,245,0.1);
+    transform: translateX(5px);
+}
+
+.quiz-item.active {
+    background: rgba(255,0,255,0.1);
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 15px rgba(255,0,255,0.2);
+}
+
+/* Questions Table */
+.questions-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 0.5rem;
+    margin-top: 1rem;
+}
+
+.questions-table th {
+    color: var(--neon-pink);
+    text-align: left;
+    padding: 1rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid var(--neon-pink);
+}
+
+.questions-table td {
+    padding: 1rem;
+    color: #fff;
+    background: rgba(10,10,15,0.8);
+    border: 1px solid var(--neon-blue);
+    word-wrap: break-word; /* Ensure long text wraps */
+    white-space: normal; /* Ensure long text wraps */
+}
+
+.questions-table tr:hover td {
+    background: rgba(0,255,245,0.1);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.btn-info,
+.btn-edit,
+.btn-delete {
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-info {
+    background: var(--neon-blue);
+    color: var(--dark-bg);
+}
+
+.btn-edit {
+    background: var(--neon-pink);
+    color: var(--dark-bg);
+}
+
+.btn-delete {
+    background: var(--neon-pink);
+    color: var(--dark-bg);
+}
+
+.btn-quiz {
+    background: var(--neon-yellow);
+    color: var(--dark-bg);
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Modal Styling */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 8px;
+    width: 500px;
+    max-width: 90%;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    color: var(--neon-blue);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.neon-button {
+    background: var(--neon-pink);
+    color: var(--dark-bg);
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.neon-button:hover {
+    background: var(--neon-blue);
+}
+
+.btn-cancel {
+    background: var(--dark-bg);
+    color: var(--neon-pink);
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--neon-pink);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background: var(--neon-pink);
+    color: var(--dark-bg);
+}
+
+/* Form Styling */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--neon-blue);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--neon-blue);
+    border-radius: 4px;
+    background: var(--dark-bg);
+    color: #fff;
+}
+
+.form-group textarea {
+    resize: vertical;
+}
+
+/* ...existing code... */
+
+.neon-button {
+    padding: 8px 16px;
+    border: 1px solid var(--neon-blue);
+    background: transparent;
+    color: var(--neon-blue);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    min-width: 120px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.neon-button:hover {
+    background: var(--neon-blue);
+    color: var(--dark-bg);
+    box-shadow: 0 0 10px var(--neon-blue);
+}
+
+.neon-button.live {
+    border-color: #ff4444;
+    color: #ff4444;
+}
+
+.neon-button.live:hover {
+    background: #ff4444;
+    color: var(--dark-bg);
+    box-shadow: 0 0 10px #ff4444;
+}
+
+/* ...existing code... */
