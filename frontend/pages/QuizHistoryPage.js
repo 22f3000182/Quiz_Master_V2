@@ -67,17 +67,27 @@ export default {
         
         async showPreview(quiz) {
             try {
+                if (!quiz.preview_id) {
+                    console.error('Preview ID is missing:', quiz);
+                    this.error = 'Preview not available for this quiz';
+                    return;
+                }
+                
                 const response = await fetch(`/quiz_preview/${quiz.preview_id}`, {
                     credentials: 'include'
                 });
-
+        
                 if (!response.ok) {
-                    throw new Error('Failed to fetch preview');
+                    if (response.status === 404) {
+                        throw new Error('Preview not found. The record may have been deleted.');
+                    } else {
+                        throw new Error(`Server error: ${response.status}`);
+                    }
                 }
-
+        
                 const data = await response.json();
                 console.log('Raw preview data:', data);
-
+        
                 // Update previewData with questions array directly
                 this.previewData = data.questions;
                 this.selectedQuiz = {
@@ -86,18 +96,18 @@ export default {
                     total_questions: data.total_questions
                 };
                 this.showPreviewModal = true;
-
+        
             } catch (error) {
                 console.error('Preview error:', error);
                 this.error = error.message;
             }
         },
-        
         closePreview() {
             this.showPreviewModal = false;
             this.selectedQuiz = null;
             this.previewData = [];
         },
+
         
         async showStats(quiz) {
             try {

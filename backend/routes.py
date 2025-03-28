@@ -779,62 +779,57 @@ def submit_quiz():
 
 @app.route('/quiz_history', methods=['GET'])
 @auth_required()
-def quiz_history():
+def get_quiz_history():
     try:
-        user_id = current_user.id
-        scores = Score.query.filter_by(user_id=user_id).all()
+        quiz_history = Score.query.filter_by(user_id=current_user.id).all()
         
-        quiz_history = []
-        for score in scores:
-            quiz = Quiz.query.get(score.quiz_id)
-            chapter = Chapter.query.get(quiz.chapter_id)
-            subject = Subject.query.get(chapter.subject_id)
-            
-            # Get QuizPreview for this attempt
-            preview = QuizPreview.query.filter_by(
-                quiz_id=quiz.id,
-                user_id=user_id,
-                time_stamp_of_attempt=score.time_stamp_of_attempt
-            ).first()
-            
-            quiz_history.append({
-                'quiz_id': quiz.id,
-                'preview_id': preview.id if preview else None,
-                'subject': subject.name,
-                'chapter': chapter.name,
+        # Ensure preview_id is included in the response
+        history_data = []
+        for score in quiz_history:
+            quiz = score.quiz
+            preview = QuizPreview.query.filter_by(user_id=current_user.id, quiz_id=quiz.id).first()
+            quiz_data = {
+                'subject': quiz.chapter.subject.name,
+                'chapter': quiz.chapter.name,
                 'quiz_name': quiz.quiz_name,
-                'attempt_time': score.time_stamp_of_attempt.strftime('%Y-%m-%d %H:%M:%S'),
-                'score': score.total_scored
-            })
+                'attempt_time': score.time_stamp_of_attempt,
+                'score': score.total_scored,
+                'preview_id': preview.id if preview else None  # Include preview_id if available
+            }
+            history_data.append(quiz_data)
         
-        return jsonify(quiz_history), 200
-
+        return jsonify(history_data), 200
+    
     except Exception as e:
-        app.logger.error(f"Error fetching quiz history: {str(e)}")
         return jsonify({'error': str(e)}), 500
+
 
 @app.route('/quiz_preview/<int:preview_id>', methods=['GET'])
 @auth_required()
 def get_quiz_preview(preview_id):
     try:
-        preview = QuizPreview.query.get_or_404(preview_id)
+        preview = QuizPreview.query.get(preview_id)
+        if not preview:
+            return jsonify({'error': 'Preview not found'}), 404
         
         # Verify user owns this preview
         if preview.user_id != current_user.id:
             return jsonify({'error': 'Unauthorized'}), 403
-            
-        # Get quiz questions
+        
+        # Fetch quiz questions and format preview data
         quiz = Quiz.query.get(preview.quiz_id)
+        if not quiz:
+            return jsonify({'error': 'Associated quiz not found'}), 404
+        
         questions = Question.query.filter_by(quiz_id=quiz.id).all()
         
-        # Format preview data
         preview_data = {
             'quiz_name': quiz.quiz_name,
             'total_questions': len(questions),
             'questions': []
         }
         
-        # Add each question with answer details
+        # Add each question with answer details if available
         for question in questions:
             answer_data = preview.answers_data.get(str(question.id))
             if answer_data:
@@ -846,13 +841,16 @@ def get_quiz_preview(preview_id):
                     'is_correct': answer_data['is_correct'],
                     'marks': answer_data['marks']
                 })
+            else:
+                preview_data['questions'].append({
+                    'question_statement': question.question_statement,
+                    'options': question.options
+                })
         
         return jsonify(preview_data), 200
-        
+    
     except Exception as e:
-        app.logger.error(f"Error fetching quiz preview: {str(e)}")
         return jsonify({'error': str(e)}), 500
-
 
 @app.route('/quiz_stats/<int:preview_id>', methods=['GET'])
 @auth_required()
