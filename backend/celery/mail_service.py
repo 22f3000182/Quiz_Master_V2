@@ -6,7 +6,7 @@ import logging
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 SENDER_EMAIL = 'quizmaster.mad@gmail.com'
-SENDER_PASSWORD = 'Quiz@123'
+SENDER_PASSWORD = 'sgza mlqn vuqt oucl'
 
 def send_email(to, subject, content):
     try:

@@ -6,7 +6,11 @@ from flask_security import Security, SQLAlchemyUserDatastore, auth_required
 from flask import send_from_directory
 from flask_session import Session
 from datetime import timedelta
+from flask_caching import Cache
+import flask_excel as excel
 from backend.celery.celery_factory import celery_init_app
+import backend.celery.tasks  
+
 
 
 
@@ -22,6 +26,9 @@ def createApp():
 
     # model init
     db.init_app(app)
+
+    # cache initialize 
+    cache = Cache(app)
 
     # Session configuration
     app.config['SESSION_TYPE'] = 'filesystem'
@@ -43,16 +50,18 @@ def createApp():
 
     celery_app = celery_init_app(app)
 
-    return app
+    return app, celery_app
 
-app = createApp()
+app, celery = createApp()
 
+
+import backend.routes  
 import backend.celery.celery_schedule
 import backend.create_initial_data
 
 import backend.routes
 
-
+excel.init_excel(app)
 
 if (__name__ == '__main__'):
     app.run()

@@ -4,6 +4,8 @@ from backend.models import User, db, Subject, Chapter, Quiz, Question, Role, Sco
 from datetime import datetime
 import os
 from werkzeug.utils import secure_filename
+from backend.celery.tasks import daily_reminder, monthly_report, export_quiz_data
+
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'frontend', 'pics')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -14,9 +16,64 @@ def allowed_file(filename):
 
 datastore = app.security.datastore
 
+
 @app.route('/')
 def home():
     return render_template('index.html')
+
+# @app.get('/celery')
+# def celery():
+#     task = add.delay(10, 20)
+#     return {'task_id' : task.id}
+
+
+@app.route('/trigger_daily_reminder', methods=['POST'])
+@auth_required()
+def trigger_daily_reminder():
+    """Manually trigger the daily reminder task."""
+    try:
+        if not current_user.has_role('admin'):
+            return jsonify({'error': 'Unauthorized'}), 403
+
+        daily_reminder.delay()
+        return jsonify({'message': 'Daily reminder task triggered successfully'}), 200
+
+    except Exception as e:
+        app.logger.error(f"Error triggering daily reminder: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/trigger_monthly_report', methods=['POST'])
+@auth_required()
+def trigger_monthly_report():
+    """Manually trigger the monthly report task."""
+    try:
+        if not current_user.has_role('admin'):
+            return jsonify({'error': 'Unauthorized'}), 403
+
+        monthly_report.delay()
+        return jsonify({'message': 'Monthly report task triggered successfully'}), 200
+
+    except Exception as e:
+        app.logger.error(f"Error triggering monthly report: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/export_quiz_data/<int:user_id>', methods=['GET'])
+@auth_required()
+def trigger_export_quiz_data(user_id):
+    """Trigger the export quiz data task for a specific user."""
+    try:
+        if current_user.id != user_id and not current_user.has_role('admin'):
+            return jsonify({'error': 'Unauthorized'}), 403
+
+        task = export_quiz_data.delay(user_id)
+        return jsonify({'message': 'Export quiz data task triggered successfully', 'task_id': task.id}), 202
+
+    except Exception as e:
+        app.logger.error(f"Error triggering export quiz data: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 
 
 @app.route('/login', methods=['POST'])

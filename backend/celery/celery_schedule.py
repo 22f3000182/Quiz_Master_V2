@@ -1,14 +1,13 @@
 from celery.schedules import crontab
-from flask import current_app as app
 from .tasks import daily_reminder, monthly_report
+from app import celery
 
-celery_app = app.extensions['celery']
 
-@celery_app.on_after_configure.connect
+@celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     # Daily reminder at 6 PM
     sender.add_periodic_task(
-        crontab(hour=18, minute=0),
+        crontab(hour=16, minute=34),
         daily_reminder.s(),
         name='daily-reminder'
     )

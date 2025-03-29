@@ -29,3 +29,5 @@ class LocalDevelopmentConfig(Config):
     CACHE_REDIS_PORT = 6379
 
     WTF_CSRF_ENABLED = False
+
+

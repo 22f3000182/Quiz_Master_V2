@@ -8,6 +8,7 @@ def generate_report_html(month_stats):
     # Placeholder function to generate HTML report
     report_html = f"<h1>Monthly Report</h1><p>{month_stats}</p>"
     return report_html
+
 import csv
 import io
 
@@ -15,12 +16,11 @@ import io
 def daily_reminder():
     users = User.query.filter(User.roles.any(name='user')).all()
     for user in users:
-        last_login = user.last_login or datetime.min
-        if datetime.now() - last_login > timedelta(days=1):
-            send_email(
-                user.email,
-                'Quiz Reminder',
-                f'<h1>Hello {user.full_name}</h1><p>Don\'t forget to practice your quizzes today!</p>'
+        
+        send_email(
+            user.email,
+            'Quiz Reminder',
+            f'<h1>Hello {user.full_name}</h1><p>Don\'t forget to practice your quizzes today!</p>'
             )
 
 @shared_task(ignore_result=True)
